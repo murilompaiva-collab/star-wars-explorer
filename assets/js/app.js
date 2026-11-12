@@ -37,7 +37,11 @@
       img.loading = 'lazy';
       img.width = 500;
       img.height = 400;
-      img.addEventListener('error', () => { img.src = SW.images.fallbacks[category] || SW.images.fallback; }, { once: true });
+      img.addEventListener('error', () => {
+        const fallback = SW.images.fallbacks[category] || SW.images.fallback;
+        if (img.src !== new URL(fallback, document.baseURI).href) img.src = fallback;
+        card.classList.add('image-unavailable');
+      }, { once: true });
       portrait.append(img, node('span', 'record-id', 'SW / ' + SW.images.id(record.url).padStart(3, '0')), node('span', 'record-tag', 'REGISTRO GALÁCTICO'));
       const content = node('div', 'character-content');
       const facts = node('dl', 'card-facts');
