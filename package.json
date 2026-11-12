@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "test": "node tests/verify.mjs && node --test tests/categories.test.mjs"
+    "test": "node tests/verify.mjs && node --test tests/*.test.mjs tests/*.test.cjs"
   },
   "devDependencies": {
     "axe-core": "4.10.3",

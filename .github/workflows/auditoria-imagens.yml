@@ -13,8 +13,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - run: npm ci
       - name: Executar todos os testes Node
-        run: node --test tests/*.test.cjs
+        run: npm test
+      - run: python -m pip install -r scripts/requirements-audit.txt
+      - name: Testar gerador de folhas de contato
+        run: python tests/contact_sheets_test.py
   auditoria:
     runs-on: ubuntu-latest
     steps:
@@ -25,8 +29,10 @@ jobs:
       - name: Conferir disponibilidade de todos os retratos
         run: node scripts/audit-people-images.cjs
       - name: Instalar Pillow para auditoria visual
-        run: python -m pip install Pillow
-      - name: Gerar folhas de contato dos 82 personagens
+        if: ${{ always() && hashFiles('reports/people-images.csv') != '' }}
+        run: python -m pip install -r scripts/requirements-audit.txt
+      - name: Gerar folhas de contato dos personagens retornados
+        if: ${{ always() && hashFiles('reports/people-images.csv') != '' }}
         run: python scripts/create-contact-sheets.py
       - name: Publicar CSV para inspeção manual
         if: always()
@@ -36,5 +42,7 @@ jobs:
           path: |
             reports/people-images.csv
             reports/visual-flags.csv
+            reports/people-snapshot.json
+            reports/image-metadata.csv
             reports/contact-sheets/*.jpg
           if-no-files-found: warn

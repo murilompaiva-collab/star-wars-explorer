@@ -68,3 +68,10 @@ O site continua sem build e sem dependências JavaScript externas em produção,
 A suíte cobre as quatro categorias: paginação, pesquisa por caixa/acentos, mensagem vazia, limpar pesquisa, cache persistente/vencido, recuperação de erro, campos e relações, filmes por título, falha parcial, fechamento do modal durante requisição e retorno de foco. Também verifica navegação das cinco páginas, recursos locais, referências acessíveis, esquema de campos, unidades, cache independente, consultas concorrentes e rejeição de paginação incompleta.
 
 Limites da revisão: a SWAPI real continua bloqueada pelo proxy (HTTP 403). A revisão de responsividade e consistência visual foi feita no código; renderização, contraste, dimensões e interações em navegador/dispositivo real ainda precisam de validação. Os testes axe no DOM simulado excluem contraste, pois dependem de renderização. Não foi feito deploy nem push nesta revisão, para evitar disparar a integração automática da Vercel.
+
+
+## Auditoria da issue #2
+
+Veja `docs/AUDITORIA.md`, `docs/people-image-review.csv` e `docs/IMAGENS.md`. A atribuição automática de fotos da galeria externa foi suspensa: identidade e licença permanecem não verificadas. Os registros e fluxos continuam disponíveis com fallback local; não há substituição por fotos aleatórias ou geradas.
+
+`npm test` agora executa todas as suítes `.mjs` e `.cjs`, inclusive a auditoria. Para a auditoria Python, instale `python -m pip install -r scripts/requirements-audit.txt` no seu ambiente de desenvolvimento e execute `python tests/contact_sheets_test.py`. Pillow é usado só para gerar/validar os relatórios, sem backend no site.

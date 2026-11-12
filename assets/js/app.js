@@ -32,7 +32,11 @@
       const card = node('article', 'character-card');
       const portrait = node('div', 'portrait');
       const img = node('img');
+      const fallback = SW.images.fallbacks[category] || SW.images.fallback;
       img.src = SW.images.get(category, record.url);
+      const usesFallback = img.getAttribute('src') === fallback;
+      const tag = node('span', 'record-tag', usesFallback && category === 'people' ? 'FOTO NÃO VALIDADA' : 'REGISTRO GALÁCTICO');
+      if (usesFallback) card.classList.add('image-unavailable');
       img.alt = ''; // O nome já está no título; o fallback é decorativo.
       img.loading = 'lazy';
       img.width = 500;
@@ -41,8 +45,9 @@
         const fallback = SW.images.fallbacks[category] || SW.images.fallback;
         if (img.src !== new URL(fallback, document.baseURI).href) img.src = fallback;
         card.classList.add('image-unavailable');
+        tag.textContent = category === 'people' ? 'FOTO INDISPONÍVEL' : 'REGISTRO GALÁCTICO';
       }, { once: true });
-      portrait.append(img, node('span', 'record-id', 'SW / ' + SW.images.id(record.url).padStart(3, '0')), node('span', 'record-tag', 'REGISTRO GALÁCTICO'));
+      portrait.append(img, node('span', 'record-id', 'SW / ' + SW.images.id(record.url).padStart(3, '0')), tag);
       const content = node('div', 'character-content');
       const facts = node('dl', 'card-facts');
       for (const key of config.summary) facts.append(fact(key, record[key]));

@@ -222,3 +222,43 @@ for (const category of Object.keys(pages)) {
     } finally { h.dom.window.close(); }
   });
 }
+
+test('paginação completa de 82 pessoas preserva IDs e rejeita duplicatas', async () => {
+  const fixture = JSON.parse(readFileSync('tests/fixtures/people-enumeration.json')).people;
+  const h = setup('people');
+  try {
+    await until(() => !h.doc.getElementById('searchInput').disabled);
+    h.w.localStorage.clear();
+    let calls = 0;
+    h.w.SW.api.request = async url => {
+      calls++;
+      const page = Number(new URL(url).searchParams.get('page') || 1);
+      return { count: 82, results: fixture.slice((page - 1) * 10, page * 10), next: page < 9 ? `https://swapi.dev/api/people/?page=${page + 1}` : null };
+    };
+    const result = await h.w.SW.api.load('people');
+    assert.equal(result.data.length, 82);
+    assert.equal(calls, 9);
+    assert.equal(h.w.SW.images.id(result.data.at(-1).url), '83');
+    await h.w.SW.api.load('people');
+    assert.equal(calls, 9);
+    h.w.SW.api.request = async () => ({ count: 2, results: [fixture[0], fixture[0]], next: null });
+    await assert.rejects(h.w.SW.api.all('people'), /repetido/);
+    h.w.SW.api.request = async () => ({ results: [fixture[0]], next: null });
+    await assert.rejects(h.w.SW.api.all('planets'), /categoria inesperada/);
+    assert.match(h.doc.querySelector('.record-tag').textContent, /FOTO NÃO VALIDADA/);
+  } finally { h.dom.window.close(); }
+});
+
+test('cache adulterado com URL externa ou registros duplicados é ignorado', async () => {
+  const h = setup('people');
+  try {
+    await until(() => !h.doc.getElementById('searchInput').disabled);
+    for (const data of [[{ name: 'Falso', url: 'https://example.com/api/people/1/' }], [h.record, h.record]]) {
+      h.w.localStorage.setItem('swexplorer:v1:people', JSON.stringify({ savedAt: Date.now(), data }));
+      const before = h.calls.length;
+      const result = await h.w.SW.api.load('people');
+      assert.equal(result.source, 'api');
+      assert.equal(h.calls.length - before, 2);
+    }
+  } finally { h.dom.window.close(); }
+});

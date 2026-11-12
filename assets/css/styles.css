@@ -44,3 +44,8 @@
 .character-card:hover .portrait img,.character-card:focus-within .portrait img{filter:saturate(1) contrast(1.04)}
 .image-unavailable .portrait img{filter:none;object-position:center;opacity:.8}
 @media(max-width:575px){.portrait img{object-position:center 24%}}
+
+/* O fallback é uma indicação de ausência, sem recorte de retrato. */
+.image-unavailable .portrait img{object-fit:contain;transform:none!important}
+.character-card:focus-within{outline:1px solid #d8b66b;outline-offset:3px}
+.record-tag{max-width:calc(100% - 24px);overflow-wrap:anywhere}

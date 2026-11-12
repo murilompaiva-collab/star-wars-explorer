@@ -12,6 +12,13 @@ SW.api = {
     url.protocol = 'https:';
     return url.href;
   },
+  recordUrl(category, record) {
+    const url = this.safeUrl(record.url);
+    if (!new URL(url).pathname.match(new RegExp('^/api/' + category + '/\\d+/?$'))) {
+      throw new Error('Registro de categoria inesperada.');
+    }
+    return url;
+  },
   async request(url) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 20000);
@@ -26,6 +33,7 @@ SW.api = {
     const records = [];
     let expectedCount;
     const visited = new Set();
+    const recordUrls = new Set();
     while (next) {
       next = this.safeUrl(next);
       if (visited.has(next)) throw new Error('Paginação repetida na API.');
@@ -38,7 +46,12 @@ SW.api = {
       if (page.next != null && (typeof page.next !== 'string' || !page.next)) {
         throw new Error('Próxima página inválida.');
       }
-      records.push(...page.results);
+      for (const record of page.results) {
+        const recordUrl = this.recordUrl(category, record);
+        if (recordUrls.has(recordUrl)) throw new Error('Registro repetido na paginação.');
+        recordUrls.add(recordUrl);
+        records.push(record);
+      }
       onProgress?.(records.length, page.count);
       next = page.next;
     }
@@ -48,7 +61,13 @@ SW.api = {
     return records;
   },
   async load(category, onProgress) {
-    const cached = SW.cache.read(category);
+    let cached = SW.cache.read(category);
+    if (cached) {
+      try {
+        const urls = cached.data.map(record => this.recordUrl(category, record));
+        if (new Set(urls).size !== urls.length) cached = null;
+      } catch { cached = null; }
+    }
     if (cached?.fresh) return { data: cached.data, source: 'cache' };
     try {
       const data = await this.all(category, onProgress);
