@@ -1,2 +1,2 @@
-# hogwarts-explorer
-Projeto de Programação Web - IFSP | Harry Potter
+# star-wars-explorer
+Projeto de Programação Web - IFSP | Star Wars
