@@ -9,7 +9,7 @@ Abra a pasta em um servidor estático (por exemplo, a extensão Live Server do V
 ## Etapa atual
 
 - Início com apresentação e links para as quatro categorias.
-- Personagens com carregamento automático de todas as páginas da SWAPI, pesquisa local por nome, cards e modal Bootstrap com campos e relações resolvidas sob demanda.
+- Quatro categorias com carregamento automático de todas as páginas da SWAPI, pesquisa local por nome, cards e modal Bootstrap com campos e relações resolvidas sob demanda.
 - Planetas, naves e veículos com listagem completa, pesquisa, paginação, cache e modais reutilizados.
 - Layout responsivo, foco visível, menu móvel e estados de carregamento, erro e pesquisa sem resultados.
 
@@ -26,9 +26,9 @@ Scripts comuns com `defer` são executados na ordem declarada. O objeto `SW` com
 
 ## Fluxo dos dados
 
-A página consulta `swexplorer:v1:people`. Se o cache estiver válido, não consulta novamente a listagem. Caso contrário, acumula `results` seguindo `next` até o fim e só então grava o cache completo. Se a consulta falhar, usa o cache antigo com aviso; sem cache, apresenta erro e botão de nova tentativa. Se o armazenamento estiver bloqueado, mantém os dados em memória. A pesquisa ignora caixa e acentos e não faz requisições.
+Cada página consulta sua chave `swexplorer:v1:people`, `planets`, `starships` ou `vehicles`. Se o cache estiver válido, não consulta novamente a listagem. Caso contrário, acumula `results` seguindo `next` até o fim e só então grava o cache completo. Se a consulta falhar, usa o cache antigo com aviso; sem cache, apresenta erro e botão de nova tentativa. Se o armazenamento estiver bloqueado, mantém os dados em memória. A pesquisa ignora caixa e acentos e não faz requisições.
 
-Ao abrir o modal, os campos principais aparecem imediatamente. Relações (planeta natal, filmes, espécies, naves e veículos) são consultadas sob demanda e guardadas em `swexplorer:v1:relations`. Falhas individuais não bloqueiam o restante da ficha. Datas e link de origem ficam em informações do registro. Dados desconhecidos são identificados, sem inventar valores.
+Ao abrir o modal, os campos principais aparecem imediatamente. Relações (planeta natal, filmes, espécies, naves e veículos) são consultadas sob demanda e guardadas em chaves individuais `swexplorer:v1:relation:<URL>`, cada uma com validade própria de 24 horas. Consultas concorrentes à mesma relação compartilham a requisição. O cache agregado antigo de relações é ignorado. Falhas individuais não bloqueiam o restante da ficha. Datas e link de origem ficam em informações do registro. Dados desconhecidos são identificados, sem inventar valores.
 
 ## Imagens e créditos
 
@@ -51,3 +51,20 @@ O endpoint oficial pode apresentar indisponibilidade ou restrições de CORS/red
 - Links, recursos locais e unicidade de IDs verificados nas cinco páginas.
 - Revisão visual e interações reais no navegador pendentes: o serviço de preview falhou ao abrir a conexão do navegador (`timed out waiting for relay readiness`).
 - Integração ao vivo com SWAPI pendente: o proxy do ambiente respondeu HTTP 403 ao domínio.
+
+
+## Revisão técnica das quatro categorias
+
+Base revisada: commit `9f3a77c`, branch `work`.
+
+Correções: rótulo Personagens no menu das três páginas novas; unidades dos campos numéricos; datas ausentes sem conversão para 1970; fallback de imagem da categoria; prazo independente e deduplicação das consultas de relacionamentos; rejeição de listagens incompletas e de protocolos externos ao HTTP/HTTPS; interrupção da atualização do modal ao fechá-lo; botão de limpar desabilitado durante recarga.
+
+Ajustes responsivos preservam a identidade visual: quebra de textos longos, alvos de toque de 44 px e uma coluna de cards em telas menores que 360 px.
+
+### Executar testes
+
+O site continua sem build e sem dependências JavaScript externas em produção, além do Bootstrap local. Node.js 20 ou superior é usado apenas para os testes. Instale as dependências de desenvolvimento com `npm ci` e execute `npm test`. `jsdom` simula o DOM e executa o Bootstrap real; `axe-core` verifica acessibilidade semântica. As respostas SWAPI são simuladas e não entram nos arquivos do produto.
+
+A suíte cobre as quatro categorias: paginação, pesquisa por caixa/acentos, mensagem vazia, limpar pesquisa, cache persistente/vencido, recuperação de erro, campos e relações, filmes por título, falha parcial, fechamento do modal durante requisição e retorno de foco. Também verifica navegação das cinco páginas, recursos locais, referências acessíveis, esquema de campos, unidades, cache independente, consultas concorrentes e rejeição de paginação incompleta.
+
+Limites da revisão: a SWAPI real continua bloqueada pelo proxy (HTTP 403). A revisão de responsividade e consistência visual foi feita no código; renderização, contraste, dimensões e interações em navegador/dispositivo real ainda precisam de validação. Os testes axe no DOM simulado excluem contraste, pois dependem de renderização. Não foi feito deploy nem push nesta revisão, para evitar disparar a integração automática da Vercel.

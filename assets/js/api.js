@@ -2,10 +2,11 @@ window.SW = window.SW || {};
 SW.api = {
   base: 'https://swapi.dev/api/',
   related: new Map(),
+  pendingRelations: new Map(),
   // Somente URLs da SWAPI são consultadas, sempre usando HTTPS.
   safeUrl(value) {
     const url = new URL(value, this.base);
-    if (url.hostname !== 'swapi.dev' || !url.pathname.startsWith('/api/') || url.username || url.password || url.port) {
+    if (!['http:', 'https:'].includes(url.protocol) || url.hostname !== 'swapi.dev' || !url.pathname.startsWith('/api/') || url.username || url.password || url.port) {
       throw new Error('Endereço da API inválido.');
     }
     url.protocol = 'https:';
@@ -23,6 +24,7 @@ SW.api = {
   async all(category, onProgress) {
     let next = this.base + category + '/';
     const records = [];
+    let expectedCount;
     const visited = new Set();
     while (next) {
       next = this.safeUrl(next);
@@ -32,9 +34,16 @@ SW.api = {
       if (!Array.isArray(page.results) || !page.results.every(item => item && typeof item.name === 'string' && typeof item.url === 'string')) {
         throw new Error('Resposta inesperada da SWAPI.');
       }
+      if (Number.isInteger(page.count) && page.count >= 0) expectedCount = page.count;
+      if (page.next != null && (typeof page.next !== 'string' || !page.next)) {
+        throw new Error('Próxima página inválida.');
+      }
       records.push(...page.results);
       onProgress?.(records.length, page.count);
       next = page.next;
+    }
+    if (expectedCount !== undefined && records.length !== expectedCount) {
+      throw new Error('Listagem incompleta da SWAPI.');
     }
     return records;
   },
@@ -52,25 +61,32 @@ SW.api = {
   },
   async relation(url) {
     const key = this.safeUrl(url);
-    if (this.related.has(key)) return this.related.get(key);
-    const cached = SW.cache.read('relations')?.data || [];
-    const match = cached.find(item => item.url === key);
-    if (match && SW.cache.read('relations')?.fresh) {
-      this.related.set(key, match.name);
+    const memory = this.related.get(key);
+    if (memory && Date.now() >= memory.savedAt && Date.now() - memory.savedAt < SW.cache.maxAge) return memory.name;
+    if (this.pendingRelations.has(key)) return this.pendingRelations.get(key);
+    // Cada relação tem seu próprio prazo: salvar outra não renova dados antigos.
+    const cacheKey = 'relation:' + key;
+    const cached = SW.cache.read(cacheKey);
+    const match = cached?.data[0];
+    if (cached?.fresh && match) {
+      this.related.set(key, { name: match.name, savedAt: cached.savedAt });
       return match.name;
     }
-    try {
-      const item = await this.request(key);
-      const name = item.name || item.title;
-      if (typeof name !== 'string') throw new Error('Relação sem nome.');
-      this.related.set(key, name);
-      // Relê depois da requisição para preservar consultas concorrentes.
-      const entries = SW.cache.read('relations')?.data || [];
-      SW.cache.write('relations', [...entries.filter(entry => entry.url !== key), { name, url: key }]);
-      return name;
-    } catch (error) {
-      if (match) return match.name + ' (salvo)';
-      throw error;
-    }
+    const request = (async () => {
+      try {
+        const item = await this.request(key);
+        const name = item.name || item.title;
+        if (typeof name !== 'string') throw new Error('Relação sem nome.');
+        this.related.set(key, { name, savedAt: Date.now() });
+        SW.cache.write(cacheKey, [{ name, url: key }]);
+        return name;
+      } catch (error) {
+        if (match) return match.name + ' (salvo)';
+        throw error;
+      }
+    })();
+    this.pendingRelations.set(key, request);
+    try { return await request; }
+    finally { this.pendingRelations.delete(key); }
   }
 };

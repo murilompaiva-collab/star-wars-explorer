@@ -32,5 +32,12 @@ SW.format = function (value, key) {
   if (key === 'height') return value + ' cm';
   if (key === 'mass') return value + ' kg';
   if (key === 'birth_year') return value;
+  const units = {
+    rotation_period: 'h', orbital_period: 'dias', diameter: 'km',
+    length: 'm', max_atmosphering_speed: 'km/h', cargo_capacity: 'kg',
+    cost_in_credits: 'créditos', surface_water: '%'
+  };
+  // Acrescenta unidades somente a números, preservando valores especiais como 'unlimited'.
+  if (units[key] && /^\d[\d,.]*$/.test(String(value))) return value + ' ' + units[key];
   return String(value).split(', ').map(part => translations[part] || part).join(', ');
 };

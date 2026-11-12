@@ -1,0 +1,12 @@
+{
+  "name": "star-wars-explorer",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test": "node tests/verify.mjs && node --test tests/categories.test.mjs"
+  },
+  "devDependencies": {
+    "axe-core": "4.10.3",
+    "jsdom": "26.1.0"
+  }
+}

@@ -37,7 +37,7 @@
       img.loading = 'lazy';
       img.width = 500;
       img.height = 400;
-      img.addEventListener('error', () => { img.src = SW.images.fallback; }, { once: true });
+      img.addEventListener('error', () => { img.src = SW.images.fallbacks[category] || SW.images.fallback; }, { once: true });
       portrait.append(img, node('span', 'record-id', 'SW / ' + SW.images.id(record.url).padStart(3, '0')), node('span', 'record-tag', 'REGISTRO GALÁCTICO'));
       const content = node('div', 'character-content');
       const facts = node('dl', 'card-facts');
@@ -84,7 +84,7 @@
     technical.append(node('summary', '', 'Informações do registro'));
     const technicalFacts = node('dl', 'detail-grid mt-3');
     for (const [key, label] of [['created', 'Criado em'], ['edited', 'Atualizado em']]) {
-      const date = new Date(record[key]);
+      const date = new Date(record[key] || NaN);
       const wrapper = node('div');
       wrapper.append(node('dt', '', label), node('dd', '', Number.isNaN(date.getTime()) ? 'Não informado' : date.toLocaleString('pt-BR')));
       technicalFacts.append(wrapper);
@@ -105,7 +105,7 @@
     }
   }
 
-  modalElement.addEventListener('hidden.bs.modal', () => { detailVersion++; });
+  modalElement.addEventListener('hide.bs.modal', () => { detailVersion++; });
   // O modal aberto via JavaScript devolve o foco ao botão que o abriu.
   let returnFocus;
   modalElement.addEventListener('show.bs.modal', event => { returnFocus = event.relatedTarget; });
@@ -113,6 +113,7 @@
 
   async function load() {
     search.disabled = true;
+    byId('clearSearch').disabled = true;
     byId('loadState').hidden = false;
     byId('errorState').hidden = true;
     byId('emptyState').hidden = true;
@@ -134,6 +135,7 @@
         byId('notice').hidden = false;
       }
       search.disabled = false;
+      byId('clearSearch').disabled = false;
       render();
     } catch {
       byId('errorState').hidden = false;
