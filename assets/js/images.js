@@ -8,6 +8,12 @@ SW.images = {
     return String(url).match(/\/(\d+)\/?$/)?.[1] || '—';
   },
   get(category, url) {
-    return this.records[category]?.[this.id(url)] || this.fallbacks[category] || this.fallback;
+    const id = this.id(url);
+    // Galeria visual externa, associada aos IDs da SWAPI. Caso a imagem falhe,
+    // app.js mantém o fallback da categoria.
+    if (category === 'people' && /^\d+$/.test(id)) {
+      return this.records.people[id] || `https://starwarsgallery.netlify.app/assets/people/${id}.jpg`;
+    }
+    return this.records[category]?.[id] || this.fallbacks[category] || this.fallback;
   }
 };
