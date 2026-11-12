@@ -13,11 +13,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Executar testes de mapeamento
-        run: node --test tests/images.test.cjs
+      - name: Executar todos os testes Node
+        run: node --test tests/*.test.cjs
   auditoria:
     runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
