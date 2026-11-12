@@ -7,3 +7,33 @@
 .details-button,.clear-search{min-height:44px}
 .navbar-toggler{min-width:44px;min-height:44px}
 @media(max-width:359px){.characters-grid{grid-template-columns:minmax(0,1fr)}.brand{font-size:14px;letter-spacing:1px}.brand small{letter-spacing:1px}}
+
+
+/* Acabamento visual v2: mantém a identidade do arquivo galáctico. */
+.character-card{isolation:isolate;background:linear-gradient(155deg,#151d29,#0e141d 70%);border-color:#c7a96a24;box-shadow:0 12px 34px #00000024;transition:transform .24s ease,border-color .24s ease,box-shadow .24s ease}
+.character-card:hover,.character-card:focus-within{transform:translateY(-5px);border-color:#d8b66b91;box-shadow:0 18px 42px #00000055,0 0 0 1px #d8b66b18}
+.portrait{background:radial-gradient(ellipse at 50% 65%,#2a3646,#111822 74%);border-bottom-color:#d8b66b28}
+.portrait:after{content:"";position:absolute;inset:35% 0 0;background:linear-gradient(transparent,#0c121c91);pointer-events:none}
+.portrait img{display:block;transition:transform .45s ease,opacity .3s ease;opacity:.92}
+.character-card:hover .portrait img,.character-card:focus-within .portrait img{transform:scale(1.055);opacity:1}
+.record-id,.record-tag{z-index:1;text-shadow:0 1px 8px #000}
+.record-id{background:#080b10b5;border:1px solid #d8b66b30;padding:5px 8px;border-radius:3px;color:#f0e0ba}
+.record-tag{background:#080b10a8;padding:4px 6px;border-radius:2px;color:#e1c486}
+.character-content h2{color:#f7f3e9;line-height:1.35}
+.card-facts dt{color:#a7afbc}
+.card-facts dd{color:#e8edf2}
+.details-button{color:#f1cf81;font-weight:650;letter-spacing:1.2px}
+.details-button:hover{color:#ffe4a6}
+.modal-content{background:linear-gradient(145deg,#141d29,#0e151e);border-color:#d8b66b66;box-shadow:0 28px 85px #000b}
+.modal-header{background:linear-gradient(100deg,#d8b66b0c,transparent 75%)}
+.modal-title{letter-spacing:-.6px}
+.modal-body>.detail-grid{gap:22px 28px}
+.detail-grid>div{min-width:0}
+.detail-grid dt{color:#aeb8c7;font-size:10px;letter-spacing:1.1px}
+.detail-grid dd{color:#f2f4f7;line-height:1.55}
+.detail-section{border-top-color:#d8b66b27}
+.detail-section h3{font-weight:600}
+.detail-section summary{cursor:pointer;color:#e4c783}
+.detail-section summary:hover{color:#ffe1a0}
+@media(hover:none){.character-card:hover{transform:none}.character-card:hover .portrait img{transform:none}}
+@media(prefers-reduced-motion:reduce){.character-card,.portrait img{transition:none!important}}
