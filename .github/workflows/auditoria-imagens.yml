@@ -1,0 +1,34 @@
+name: Star Wars Explorer - testes e auditoria de imagens
+on:
+  push:
+    branches: [work]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Executar testes de mapeamento
+        run: node --test tests/images.test.cjs
+  auditoria:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Conferir disponibilidade de todos os retratos
+        run: node scripts/audit-people-images.cjs
+      - name: Publicar CSV para inspeção manual
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: auditoria-imagens-personagens
+          path: reports/people-images.csv
+          if-no-files-found: warn
