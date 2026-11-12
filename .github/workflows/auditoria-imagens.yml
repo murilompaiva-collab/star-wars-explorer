@@ -25,10 +25,16 @@ jobs:
           node-version: '22'
       - name: Conferir disponibilidade de todos os retratos
         run: node scripts/audit-people-images.cjs
+      - name: Instalar Pillow para auditoria visual
+        run: python -m pip install Pillow
+      - name: Gerar folhas de contato dos 82 personagens
+        run: python scripts/create-contact-sheets.py
       - name: Publicar CSV para inspeção manual
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: auditoria-imagens-personagens
-          path: reports/people-images.csv
+          path: |
+            reports/people-images.csv
+            reports/contact-sheets/*.jpg
           if-no-files-found: warn
