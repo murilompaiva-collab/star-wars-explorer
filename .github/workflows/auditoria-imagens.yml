@@ -36,5 +36,6 @@ jobs:
           name: auditoria-imagens-personagens
           path: |
             reports/people-images.csv
+            reports/visual-flags.csv
             reports/contact-sheets/*.jpg
           if-no-files-found: warn
