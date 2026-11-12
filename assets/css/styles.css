@@ -37,3 +37,10 @@
 .detail-section summary:hover{color:#ffe1a0}
 @media(hover:none){.character-card:hover{transform:none}.character-card:hover .portrait img{transform:none}}
 @media(prefers-reduced-motion:reduce){.character-card,.portrait img{transition:none!important}}
+
+/* Acabamento dos retratos: enquadramento e leitura consistentes. */
+.portrait img{object-position:center 28%;filter:saturate(.88) contrast(1.05)}
+.portrait:after{inset:45% 0 0;background:linear-gradient(transparent,#0b111bc4)}
+.character-card:hover .portrait img,.character-card:focus-within .portrait img{filter:saturate(1) contrast(1.04)}
+.image-unavailable .portrait img{filter:none;object-position:center;opacity:.8}
+@media(max-width:575px){.portrait img{object-position:center 24%}}
