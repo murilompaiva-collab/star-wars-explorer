@@ -10,7 +10,7 @@ Abra a pasta em um servidor estático (por exemplo, a extensão Live Server do V
 
 - Início com apresentação e links para as quatro categorias.
 - Personagens com carregamento automático de todas as páginas da SWAPI, pesquisa local por nome, cards e modal Bootstrap com campos e relações resolvidas sob demanda.
-- Planetas, naves e veículos com navegação e estrutura visual, sinalizados como próxima etapa.
+- Planetas, naves e veículos com listagem completa, pesquisa, paginação, cache e modais reutilizados.
 - Layout responsivo, foco visível, menu móvel e estados de carregamento, erro e pesquisa sem resultados.
 
 ## Organização
@@ -32,7 +32,7 @@ Ao abrir o modal, os campos principais aparecem imediatamente. Relações (plane
 
 ## Imagens e créditos
 
-Esta etapa usa somente o fallback SVG original e uma ilustração de planeta feita em CSS. Não são fotografias dos personagens. Para adicionar imagens, inclua arquivos locais com permissão de uso e preencha `SW.images.records.people` usando o ID do registro; registre aqui a fonte e a licença de cada arquivo. Arquivos ausentes retornam ao fallback. Nenhum proxy ou serviço externo de imagens é usado.
+Esta etapa usa fallbacks SVG locais por categoria e uma ilustração de planeta feita em CSS. Fotografias reais de personagens ainda dependem de arquivos com permissão de uso verificada. Não são fotografias dos personagens. Para adicionar imagens, inclua arquivos locais com permissão de uso e preencha `SW.images.records.people` usando o ID do registro; registre aqui a fonte e a licença de cada arquivo. Arquivos ausentes retornam ao fallback. Nenhum proxy ou serviço externo de imagens é usado.
 
 Bootstrap 5.3.3 (MIT), arquivos locais obtidos de:
 - https://github.com/twbs/bootstrap/tree/v5.3.3/dist

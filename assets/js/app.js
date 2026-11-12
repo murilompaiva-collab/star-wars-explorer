@@ -41,7 +41,7 @@
       portrait.append(img, node('span', 'record-id', 'SW / ' + SW.images.id(record.url).padStart(3, '0')), node('span', 'record-tag', 'REGISTRO GALÁCTICO'));
       const content = node('div', 'character-content');
       const facts = node('dl', 'card-facts');
-      facts.append(fact('birth_year', record.birth_year), fact('height', record.height));
+      for (const key of config.summary) facts.append(fact(key, record[key]));
       const button = node('button', 'details-button', 'VER DOSSIÊ');
       button.type = 'button';
       button.setAttribute('aria-label', 'Ver detalhes de ' + record.name);
@@ -56,7 +56,7 @@
     cards.replaceChildren(fragment);
     byId('emptyState').hidden = filtered.length !== 0;
     byId('clearSearch').hidden = search.value.length === 0;
-    byId('resultCount').textContent = `${filtered.length} de ${records.length} personagens`;
+    byId('resultCount').textContent = `${filtered.length} de ${records.length} ${config.label.toLowerCase()}`;
   }
 
   async function openDetails(record, trigger) {
@@ -122,7 +122,7 @@
     cards.replaceChildren();
     try {
       const result = await SW.api.load(category, (loaded, total) => {
-        byId('loadMessage').textContent = `Carregando personagens: ${loaded}${Number.isFinite(total) ? ' de ' + total : ''}…`;
+        byId('loadMessage').textContent = `Carregando ${config.label.toLowerCase()}: ${loaded}${Number.isFinite(total) ? ' de ' + total : ''}…`;
       });
       records = result.data;
       const messages = {
