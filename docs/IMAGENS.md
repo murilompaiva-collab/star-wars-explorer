@@ -31,5 +31,5 @@ O catálogo utiliza IDs da SWAPI. O código aceita imagens locais por ID, sem de
 
 | ID | Fonte / URL original | Autor / titular | Licença ou autorização | Crédito exigido | Verificado em |
 |---|---|---|---|---|---|
-| | | | | | |
+| 1 | https://commons.wikimedia.org/wiki/File:Luke_Skywalker_-_Welcome_Banner.jpg | Star Wars / Bonnie Burton | CC BY 2.0 — https://creativecommons.org/licenses/by/2.0/ | Star Wars / Bonnie Burton, via Wikimedia Commons | 2026-11-12 |
 
